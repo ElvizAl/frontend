@@ -111,7 +111,7 @@ export default function Login() {
                             </div>
 
                             <div className="flex justify-end pt-1">
-                                <a href="#" className="text-xs text-[#4B3BFB] hover:underline">
+                                <a href="/forgot-password" className="text-xs text-[#4B3BFB] hover:underline">
                                     Forgot your password? Here
                                 </a>
                             </div>
@@ -138,6 +138,9 @@ export default function Login() {
                                 <button
                                     type="button"
                                     disabled={isPending}
+                                    onClick={() => {
+                                        window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
+                                    }}
                                     className="group relative flex items-center justify-center gap-2 pb-1 text-sm font-medium text-gray-900 transition-all hover:text-black disabled:opacity-50"
                                 >
                                     <svg viewBox="0 0 24 24" className="h-[20px] w-[20px]" aria-hidden="true">

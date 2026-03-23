@@ -6,20 +6,20 @@ const links = [
   {
     title: "Beli Mobil",
     href: "/beli-mobil",
-    // Ganti dengan path ikon 3D yang sesuai di folder public/
-    icon: "/icon-beli-mobil.png", 
+    // Gambar ilustrasi aesthetic mobil dari Unsplash
+    icon: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=600&auto=format&fit=crop",
   },
   {
     title: "Jual Mobil",
     href: "/jual-mobil",
-    // Ganti dengan path ikon 3D yang sesuai di folder public/
-    icon: "/icon-jual-mobil.png",
+    // Gambar ilustrasi kunci/transaksi mobil dari Unsplash 
+    icon: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=200&auto=format&fit=crop",
   },
 ];
 
 export function QuickLinks() {
   return (
-    <section className="w-full flex justify-center py-6 mt-4">
+    <section className="w-full max-w-7xl mx-auto flex justify-center py-6 mt-4">
       <div className="flex items-center gap-12 md:gap-24">
         {links.map((link, index) => (
           <Link
@@ -27,25 +27,17 @@ export function QuickLinks() {
             href={link.href}
             className="flex flex-col items-center group transition-transform hover:scale-105 active:scale-95"
           >
-            {/* Lingkaran Background */}
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shadow-sm border border-black/5 dark:border-white/5 mb-3 group-hover:shadow-md transition-all">
-              {/* Ikon 3D */}
-              {/* Fallback teks jika gambar tidak ditemukan saat development */}
-              <div className="relative w-full h-full flex items-center justify-center">
-                <span className="absolute text-[10px] text-zinc-400 font-medium text-center leading-tight px-2 z-0">
-                  Icon<br />{link.title}
-                </span>
+            {/* Lingkaran Background dengan Gambar */}
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white flex items-center justify-center shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] border border-gray-100 mb-4 group-hover:shadow-[0_8px_30px_-4px_rgba(227,24,24,0.3)] group-hover:-translate-y-1 transition-all duration-300 overflow-hidden text-[#E31818]">
+              <div className="w-full h-full relative border border-gray-100 bg-gray-50/50">
                 <img
                   src={link.icon}
                   alt={link.title}
-                  className="w-12 h-12 sm:w-14 sm:h-14 object-contain z-10 drop-shadow-sm"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
+                  className="w-full h-full object-cover rounded-full shadow-sm"
                 />
               </div>
             </div>
-            
+
             {/* Teks Judul */}
             <span className="text-sm sm:text-base font-medium text-zinc-900 dark:text-zinc-100 text-center">
               {link.title}

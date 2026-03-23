@@ -57,7 +57,7 @@ export function Banner() {
   }
 
   return (
-    <div className="w-full relative group">
+    <div className="w-full max-w-7xl mx-auto relative group">
       <Carousel setApi={setApi} className="w-full">
         <CarouselContent>
           {banners.map((banner, index) => (

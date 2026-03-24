@@ -46,7 +46,7 @@ export const getMyOrderById = async (id: string) => {
 export const uploadKtp = async (orderId: string, ktpFile: File) => {
     const formData = new FormData();
     formData.append("ktp", ktpFile);
-    const res = await fetch(`${BASE_URL}/order/${orderId}/ktp`, {
+    const res = await fetch(`${BASE_URL}/order/my/${orderId}/ktp`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: formData,
@@ -67,7 +67,7 @@ export const uploadBuktiPembayaran = async (
     if (data.nominal) formData.append("nominal", String(data.nominal));
     if (buktiFile) formData.append("bukti", buktiFile);
 
-    const res = await fetch(`${BASE_URL}/order/${orderId}/bayar`, {
+    const res = await fetch(`${BASE_URL}/order/my/${orderId}/bayar`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: formData,

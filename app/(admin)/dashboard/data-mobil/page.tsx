@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Plus, Pencil, Trash2, Search, Eye } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { toast } from "sonner";
 
 const STATUS_MAP: Record<string, string> = {
@@ -131,18 +130,16 @@ export default function AdminDataMobilPage() {
                                 </TableRow>
                             ) : (
                                 filtered.map((item: any) => {
-                                    const primaryFoto = item.foto?.find((f: any) => f.isPrimary) ?? item.foto?.[0];
+                                    const primaryFoto = item.fotomobils?.find((f: any) => f.isPrimary) ?? item.fotomobils?.[0];
                                     return (
                                         <TableRow key={item.id}>
                                             <TableCell>
                                                 <div className="relative h-12 w-20 rounded-md overflow-hidden bg-muted">
-                                                    {primaryFoto ? (
-                                                        <Image src={primaryFoto.url} alt={item.nama} fill className="object-cover" sizes="80px" />
-                                                    ) : (
-                                                        <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-xs">
-                                                            No foto
-                                                        </div>
-                                                    )}
+                                                    <img
+                                                        src={primaryFoto?.url ?? "https://images.unsplash.com/photo-1549317661-bc02c32e2a96?q=80&w=200&auto=format&fit=crop"}
+                                                        alt={item.nama}
+                                                        className="w-full h-full object-cover"
+                                                    />
                                                 </div>
                                             </TableCell>
                                             <TableCell className="font-medium">{item.nama}</TableCell>

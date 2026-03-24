@@ -11,6 +11,7 @@ import {
     Users,
     ChevronLeft,
     ClipboardList,
+    FileText,
 } from "lucide-react";
 
 import {
@@ -55,11 +56,6 @@ const transactionItems = [
         url: "/dashboard/pesanan",
         icon: ShoppingCart,
     },
-    {
-        title: "Verifikasi Pembayaran",
-        url: "/dashboard/pembayaran",
-        icon: CreditCard,
-    },
 ];
 
 const managementItems = [
@@ -67,6 +63,11 @@ const managementItems = [
         title: "Banner Promosi",
         url: "/dashboard/banner",
         icon: Images,
+    },
+    {
+        title: "Laporan Penjualan",
+        url: "/dashboard/laporan",
+        icon: FileText,
     },
 ];
 

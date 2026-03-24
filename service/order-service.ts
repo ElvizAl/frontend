@@ -158,3 +158,14 @@ export const getDashboardStats = async () => {
     if (!res.ok) throw new Error(result.message || "Gagal mengambil statistik");
     return result;
 };
+
+export const getLaporan = async (params: { bulan: number; tahun: number }) => {
+    const url = new URL(`${BASE_URL}/order/laporan`);
+    url.searchParams.append("bulan", String(params.bulan));
+    url.searchParams.append("tahun", String(params.tahun));
+    const res = await fetch(url.toString(), { headers: getAuthHeaders() });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Gagal mengambil laporan");
+    return result;
+};
+

@@ -88,7 +88,7 @@ export function CarList() {
             {!isLoading && !isError && cars.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {cars.map((car: any) => {
-                        const primaryFoto = car.foto?.find((f: any) => f.isPrimary) ?? car.foto?.[0];
+                        const primaryFoto = car.fotomobils?.find((f: any) => f.isPrimary) ?? car.fotomobils?.[0];
                         return (
                             <CarCard
                                 key={car.id}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
 import {
     SlidersHorizontal, Search, ShoppingCart, Loader2,
@@ -26,6 +27,7 @@ export default function Navbar() {
     const { user, isLoading, isLoggedIn } = useAuth();
     const pathname = usePathname();
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const isHomePage = pathname === "/";
 
@@ -39,6 +41,7 @@ export default function Navbar() {
 
     const handleLogout = () => {
         Cookies.remove("auth_token");
+        queryClient.removeQueries({ queryKey: ["auth-user"] });
         router.push("/");
         router.refresh();
     };

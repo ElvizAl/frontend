@@ -10,6 +10,7 @@ import {
     Images,
     Users,
     ChevronLeft,
+    ClipboardList,
 } from "lucide-react";
 
 import {
@@ -37,9 +38,14 @@ const mainMenuItems = [
         icon: LayoutDashboard,
     },
     {
-        title: "Data Mobil",
-        url: "/dashboard/mobil",
+        title: "Katalog Mobil",
+        url: "/dashboard/data-mobil",
         icon: CarFront,
+    },
+    {
+        title: "Pengajuan Seller",
+        url: "/dashboard/mobil",
+        icon: ClipboardList,
     },
 ];
 

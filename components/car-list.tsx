@@ -1,80 +1,42 @@
 "use client";
 
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { CarCard } from "./car-card";
 
-// Data dummy untuk contoh tampilan
-const DUMMY_CARS = [
-    {
-        id: "1",
-        brand: "Toyota",
-        model: "Agya",
-        trim: "GR SPORT 1.2 20...",
-        year: 2022,
-        price: 136000000,
-        installmentPerMonth: 3400000,
-        mileage: 29030,
-        transmission: "Otomatis" as const,
-        plateType: "Genap" as const,
-        location: "Bandung",
-        imageUrl: "https://images.unsplash.com/photo-1549317661-bc02c32e2a96?q=80&w=600&auto=format&fit=crop",
-        isHotDeal: true,
-        daysLeft: 38,
-    },
-    {
-        id: "2",
-        brand: "Daihatsu",
-        model: "Ayla",
-        trim: "X 1.0",
-        year: 2022,
-        price: 94000000,
-        installmentPerMonth: 2500000,
-        mileage: 53497,
-        transmission: "Manual" as const,
-        plateType: "Genap" as const,
-        location: "Bandung",
-        imageUrl: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=600&auto=format&fit=crop",
-        isHotDeal: true,
-        daysLeft: 38,
-    },
-    {
-        id: "3",
-        brand: "Datsun",
-        model: "Go+",
-        trim: "T 1.2",
-        year: 2015,
-        price: 68000000,
-        installmentPerMonth: 1900000,
-        mileage: 63277,
-        transmission: "Manual" as const,
-        plateType: "Ganjil" as const,
-        location: "Cimahi",
-        imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=600&auto=format&fit=crop",
-        isHotDeal: true,
-        daysLeft: 38,
-    },
-    {
-        id: "4",
-        brand: "Honda",
-        model: "Mobilio",
-        trim: "E NEW 1.5",
-        year: 2021,
-        price: 170000000,
-        installmentPerMonth: 4100000,
-        mileage: 67401,
-        transmission: "Otomatis" as const,
-        plateType: "Genap" as const,
-        location: "Bandung",
-        imageUrl: "https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=600&auto=format&fit=crop",
-        isHotDeal: true,
-        daysLeft: 38,
-    },
-];
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const FILTERS = ["Rekomendasi", "Mobil Terbaru", "Harga Terendah", "Tahun Terbaru"];
+async function fetchMobilCards() {
+    const res = await fetch(`${BASE_URL}/mobil/cards`);
+    if (!res.ok) throw new Error("Gagal memuat data mobil");
+    return res.json();
+}
+
+// Mapping transmisi API → CarCard prop
+const toTransmisi = (t?: string): "Otomatis" | "Manual" =>
+    t === "OTOMATIS" ? "Otomatis" : "Manual";
+
+const FILTERS = ["Rekomendasi", "Harga Terendah", "Harga Tertinggi", "Tahun Terbaru"];
+
+function sortCars(cars: any[], filter: string) {
+    const arr = [...cars];
+    if (filter === "Harga Terendah") return arr.sort((a, b) => a.harga - b.harga);
+    if (filter === "Harga Tertinggi") return arr.sort((a, b) => b.harga - a.harga);
+    if (filter === "Tahun Terbaru") return arr.sort((a, b) => (b.tahun ?? 0) - (a.tahun ?? 0));
+    return arr; // Rekomendasi = urutan default server
+}
 
 export function CarList() {
     const [activeFilter, setActiveFilter] = useState("Rekomendasi");
+
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ["mobil-cards"],
+        queryFn: fetchMobilCards,
+        staleTime: 60_000,
+    });
+
+    const rawCars: any[] = data?.data || data || [];
+    const cars = sortCars(rawCars, activeFilter);
 
     return (
         <section className="w-full max-w-7xl mx-auto mt-10 mb-20 px-4 md:px-8">
@@ -99,12 +61,55 @@ export function CarList() {
                 ))}
             </div>
 
+            {/* Loading skeleton */}
+            {isLoading && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="rounded-2xl bg-gray-100 animate-pulse aspect-[3/4]" />
+                    ))}
+                </div>
+            )}
+
+            {/* Error */}
+            {isError && (
+                <p className="text-center text-muted-foreground py-12">
+                    Gagal memuat data mobil. Coba refresh halaman.
+                </p>
+            )}
+
+            {/* Empty */}
+            {!isLoading && !isError && cars.length === 0 && (
+                <p className="text-center text-muted-foreground py-12">
+                    Belum ada mobil tersedia saat ini.
+                </p>
+            )}
+
             {/* Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {DUMMY_CARS.map((car) => (
-                    <CarCard key={car.id} {...car} />
-                ))}
-            </div>
+            {!isLoading && !isError && cars.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {cars.map((car: any) => {
+                        const primaryFoto = car.foto?.find((f: any) => f.isPrimary) ?? car.foto?.[0];
+                        return (
+                            <CarCard
+                                key={car.id}
+                                id={car.id}
+                                brand={car.merek ?? ""}
+                                model={car.model ?? ""}
+                                trim={car.nama ?? ""}
+                                year={car.tahun ?? new Date().getFullYear()}
+                                price={Number(car.harga) || 0}
+                                installmentPerMonth={Math.round((Number(car.harga) || 0) / 60)}
+                                mileage={Number(car.kilometer) || 0}
+                                transmission={toTransmisi(car.transmisi)}
+                                plateType="Genap"
+                                location={car.lokasi ?? ""}
+                                imageUrl={primaryFoto?.url ?? "https://images.unsplash.com/photo-1549317661-bc02c32e2a96?q=80&w=600&auto=format&fit=crop"}
+                                isHotDeal={false}
+                            />
+                        );
+                    })}
+                </div>
+            )}
         </section>
     );
 }

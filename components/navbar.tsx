@@ -2,17 +2,30 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { SlidersHorizontal, Search, ShoppingCart, User, Loader2, ChevronDown } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import {
+    SlidersHorizontal, Search, ShoppingCart, Loader2,
+    ChevronDown, Car, LogOut, User as UserIcon, ClipboardList,
+} from "lucide-react";
+import Cookies from "js-cookie";
 import { useAuth } from "@/hooks/use-auth";
 import { SearchBar } from "./navbar/search-bar";
 import { FilterBar } from "./navbar/filter-bar";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
     const [activeTab, setActiveTab] = useState<"search" | "filter">("search");
     const [isMounted, setIsMounted] = useState(false);
     const { user, isLoading, isLoggedIn } = useAuth();
     const pathname = usePathname();
+    const router = useRouter();
 
     const isHomePage = pathname === "/";
 
@@ -23,6 +36,14 @@ export default function Navbar() {
     const initials = user?.name
         ? user.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
         : user?.email?.[0]?.toUpperCase() ?? "U";
+
+    const handleLogout = () => {
+        Cookies.remove("auth_token");
+        router.push("/");
+        router.refresh();
+    };
+
+    const isSeller = user?.role === "SELLER";
 
     return (
         <div className="relative font-sans">
@@ -43,7 +64,6 @@ export default function Navbar() {
 
                 {/* Center — berbeda berdasarkan halaman */}
                 {isHomePage ? (
-                    // GAMBAR 1: Halaman utama — Toggle Filter & Search
                     <div className="absolute left-1/2 flex -translate-x-1/2 items-center gap-8">
                         <button
                             onClick={() => setActiveTab("filter")}
@@ -61,7 +81,6 @@ export default function Navbar() {
                         </button>
                     </div>
                 ) : (
-                    // GAMBAR 2: Halaman lain — Search pill + Beli Mobil + Jual Mobil
                     <div className="flex flex-1 items-center justify-center mx-8 gap-6">
                         <div className="flex items-center gap-3 bg-gray-100 rounded-full px-5 py-2.5 w-full max-w-sm">
                             <Search className="h-4 w-4 text-gray-400 shrink-0" />
@@ -86,22 +105,69 @@ export default function Navbar() {
                         <ShoppingCart className="h-6 w-6" strokeWidth={2.5} />
                         <span className="absolute -right-1.5 -top-1.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#E31818] text-[10px] font-bold text-white">0</span>
                     </Link>
+
                     {!isMounted ? (
-                        <div className="h-6 w-6" />
+                        <div className="h-8 w-8" />
                     ) : isLoading ? (
                         <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
                     ) : isLoggedIn && user ? (
-                        <Link href="/profile" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                            <p className="text-sm font-medium text-gray-800">Halo, {user.name}</p>
-                            <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#E31818] text-xs font-bold text-white">
-                                {user.avatarUrl ? (
-                                    <img src={user.avatarUrl} alt="avatar" className="h-full w-full object-cover" />
-                                ) : initials}
-                            </div>
-                        </Link>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger className="flex items-center gap-2 hover:opacity-80 transition-opacity outline-none">
+                                <p className="text-sm font-medium text-gray-800 hidden sm:block">
+                                    Halo, {user.name?.split(" ")[0] ?? user.email}
+                                </p>
+                                <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#E31818] text-xs font-bold text-white shrink-0">
+                                    {user.avatarUrl ? (
+                                        <img src={user.avatarUrl} alt="avatar" className="h-full w-full object-cover" />
+                                    ) : initials}
+                                </div>
+                                <ChevronDown className="h-3.5 w-3.5 text-gray-500 hidden sm:block" />
+                            </DropdownMenuTrigger>
+
+                            <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuLabel className="text-xs text-muted-foreground font-normal truncate">
+                                    {user.email}
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+
+                                {/* Profil — semua role */}
+                                <DropdownMenuItem asChild>
+                                    <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
+                                        <UserIcon className="h-4 w-4" />
+                                        Profil
+                                    </Link>
+                                </DropdownMenuItem>
+
+                                {/* Menu berdasarkan role */}
+                                {isSeller ? (
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/seller/mobil-saya" className="flex items-center gap-2 cursor-pointer">
+                                            <Car className="h-4 w-4" />
+                                            Mobil Saya
+                                        </Link>
+                                    </DropdownMenuItem>
+                                ) : (
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/riwayat-order" className="flex items-center gap-2 cursor-pointer">
+                                            <ClipboardList className="h-4 w-4" />
+                                            Riwayat Order
+                                        </Link>
+                                    </DropdownMenuItem>
+                                )}
+
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    onClick={handleLogout}
+                                    className="flex items-center gap-2 text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                                >
+                                    <LogOut className="h-4 w-4" />
+                                    Logout
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     ) : (
                         <Link href="/login" className="hover:text-gray-600">
-                            <User className="h-6 w-6" strokeWidth={2.5} />
+                            <UserIcon className="h-6 w-6" strokeWidth={2.5} />
                         </Link>
                     )}
                 </div>

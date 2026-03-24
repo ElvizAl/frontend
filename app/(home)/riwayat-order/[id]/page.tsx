@@ -14,7 +14,6 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { ArrowLeft, Upload, FileText, CheckCircle, Clock, Car, Receipt } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
 const STATUS_MAP: Record<string, { label: string; color: string; pct: number }> = {
   MENUNGGU_BUKTI_PESANAN: { label: "Menunggu Bukti Pesanan", color: "bg-yellow-100 text-yellow-700 border-yellow-300", pct: 10 },
@@ -93,8 +92,12 @@ export default function OrderDetailPage() {
 
       {/* Header */}
       <div className="flex gap-4 items-start mb-6">
-        <div className="relative h-20 w-28 shrink-0 rounded-xl overflow-hidden bg-muted">
-          {foto ? <Image src={foto} alt="" fill className="object-cover" sizes="112px" /> : null}
+      <div className="relative h-20 w-28 shrink-0 rounded-xl overflow-hidden bg-muted">
+          <img
+            src={foto ?? "https://images.unsplash.com/photo-1549317661-bc02c32e2a96?q=80&w=400&auto=format&fit=crop"}
+            alt={order.mobil?.nama ?? "Mobil"}
+            className="w-full h-full object-cover"
+          />
         </div>
         <div className="flex-1">
           <h1 className="text-xl font-bold">{order.mobil?.nama}</h1>

@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ShoppingBag, ChevronRight, Clock } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
 const STATUS_MAP: Record<string, { label: string; color: string }> = {
   MENUNGGU_BUKTI_PESANAN: { label: "Menunggu Bukti Pesanan", color: "bg-yellow-100 text-yellow-700 border-yellow-300" },
@@ -76,8 +75,11 @@ export default function RiwayatOrderPage() {
             <Link key={order.id} href={`/riwayat-order/${order.id}`}
               className="flex items-center gap-4 p-4 rounded-xl border bg-card hover:shadow-md transition-all group">
               <div className="relative h-20 w-28 shrink-0 rounded-lg overflow-hidden bg-muted">
-                {foto ? <Image src={foto} alt="" fill className="object-cover" sizes="112px" /> :
-                  <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">No foto</div>}
+                <img
+                  src={foto ?? "https://images.unsplash.com/photo-1549317661-bc02c32e2a96?q=80&w=400&auto=format&fit=crop"}
+                  alt={order.mobil?.nama ?? "Mobil"}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold truncate">{order.mobil?.nama}</p>

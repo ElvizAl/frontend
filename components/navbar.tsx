@@ -150,12 +150,20 @@ export default function Navbar() {
                                         </Link>
                                     </DropdownMenuItem>
                                 ) : (
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/riwayat-order" className="flex items-center gap-2 cursor-pointer">
-                                            <ClipboardList className="h-4 w-4" />
-                                            Riwayat Order
-                                        </Link>
-                                    </DropdownMenuItem>
+                                    <>
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/pesanan" className="flex items-center gap-2 cursor-pointer">
+                                                <ShoppingCart className="h-4 w-4" />
+                                                Pesanan Aktif
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/riwayat-order" className="flex items-center gap-2 cursor-pointer">
+                                                <ClipboardList className="h-4 w-4" />
+                                                Riwayat Order
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    </>
                                 )}
 
                                 <DropdownMenuSeparator />

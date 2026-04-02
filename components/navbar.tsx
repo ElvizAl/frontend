@@ -54,15 +54,15 @@ export default function Navbar() {
 
                 {/* Left - Logo */}
                 <Link href="/" className="flex items-center gap-2 shrink-0">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E31818]">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#3D3DE8]">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 16C4 17.1046 4.89543 18 6 18H18C19.1046 18 20 17.1046 20 16V12L18.5 7H5.5L4 12V16Z" fill="white" />
-                            <circle cx="7.5" cy="14.5" r="1.5" fill="#E31818" />
-                            <circle cx="16.5" cy="14.5" r="1.5" fill="#E31818" />
-                            <path d="M6 10H18" stroke="#E31818" strokeWidth="2" />
+                            <circle cx="7.5" cy="14.5" r="1.5" fill="#3D3DE8" />
+                            <circle cx="16.5" cy="14.5" r="1.5" fill="#3D3DE8" />
+                            <path d="M6 10H18" stroke="#3D3DE8" strokeWidth="2" />
                         </svg>
                     </div>
-                    <span className="text-xl font-bold tracking-tight text-[#E31818]">Glotomotif</span>
+                    <span className="text-xl font-bold tracking-tight text-[#3D3DE8]">Glotomotif</span>
                 </Link>
 
                 {/* Center — berbeda berdasarkan halaman */}
@@ -106,7 +106,7 @@ export default function Navbar() {
                 <div className="flex items-center gap-5 shrink-0">
                     <Link href="/cart" className="relative hover:text-gray-600">
                         <ShoppingCart className="h-6 w-6" strokeWidth={2.5} />
-                        <span className="absolute -right-1.5 -top-1.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#E31818] text-[10px] font-bold text-white">0</span>
+                        <span className="absolute -right-1.5 -top-1.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#3D3DE8] text-[10px] font-bold text-white">0</span>
                     </Link>
 
                     {!isMounted ? (
@@ -119,7 +119,7 @@ export default function Navbar() {
                                 <p className="text-sm font-medium text-gray-800 hidden sm:block">
                                     Halo, {user.name?.split(" ")[0] ?? user.email}
                                 </p>
-                                <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#E31818] text-xs font-bold text-white shrink-0">
+                                <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-[#3D3DE8] text-xs font-bold text-white shrink-0">
                                     {user.avatarUrl ? (
                                         <img src={user.avatarUrl} alt="avatar" className="h-full w-full object-cover" />
                                     ) : initials}

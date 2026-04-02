@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { loginSchema, LoginInput, LoginResponse } from "@/validasi/auth-validasi";
 import { loginUser } from "@/service/auth-service";
 import Cookies from "js-cookie";
+import { getRoleFromToken } from "@/lib/decode-jwt";
 
 export default function Login() {
     const router = useRouter();
@@ -30,10 +31,14 @@ export default function Login() {
             toast.success(data.message || "Login berhasil!");
             Cookies.set("auth_token", data.accessToken, { expires: 7 });
 
-            if (data.role === "ADMIN") {
-                router.push("/admin/dashboard");
-            } else if (data.role === "SELLER") {
-                router.push("/seller/dashboard");
+            // Decode JWT untuk ambil role (lebih reliable)
+            const role = getRoleFromToken(data.accessToken);
+            if (role) Cookies.set("user_role", role, { expires: 7 });
+
+            if (role === "ADMIN") {
+                router.push("/dashboard");
+            } else if (role === "SELLER") {
+                router.push("/profile");
             } else {
                 router.push("/profile");
             }

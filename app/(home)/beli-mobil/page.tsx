@@ -103,7 +103,7 @@ function BeliMobilContent() {
                             />
                             {q && <button onClick={() => { setQ(""); setSearch(""); }} className="text-gray-400 hover:text-gray-600"><X className="h-3.5 w-3.5" /></button>}
                         </div>
-                        <Button onClick={() => setSearch(q)} className="bg-[#E31818] hover:bg-[#C91414] rounded-xl px-6">Cari</Button>
+                        <Button onClick={() => setSearch(q)} className="bg-[#3D3DE8] hover:bg-[#C91414] rounded-xl px-6">Cari</Button>
                     </div>
 
                     {/* Filter chips row */}

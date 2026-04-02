@@ -263,13 +263,15 @@ export default function AdminPesananDetailPage() {
                                 </div>
                             )}
                         </div>
-                        <div className="flex items-center gap-3">
-                            <label className="flex items-center gap-2 text-sm cursor-pointer text-primary hover:underline">
-                                <Upload className="h-3.5 w-3.5" /> {suratFile ? suratFile.name : "Upload Surat Jalan (opsional)"}
-                                <input ref={suratRef} type="file" accept="image/*,.pdf" className="hidden"
-                                    onChange={(e) => setSuratFile(e.target.files?.[0] ?? null)} />
-                            </label>
-                        </div>
+                        {(metodePengambilan || order.metodePengambilan) === "DIANTAR" && (
+                            <div className="flex items-center gap-3">
+                                <label className="flex items-center gap-2 text-sm cursor-pointer text-primary hover:underline">
+                                    <Upload className="h-3.5 w-3.5" /> {suratFile ? suratFile.name : "Upload Surat Jalan (opsional)"}
+                                    <input ref={suratRef} type="file" accept="image/*,.pdf" className="hidden"
+                                        onChange={(e) => setSuratFile(e.target.files?.[0] ?? null)} />
+                                </label>
+                            </div>
+                        )}
                         <Button onClick={() => pengambilanMutation.mutate()} disabled={pengambilanMutation.isPending || !metodePengambilan} className="w-full sm:w-auto">
                             {pengambilanMutation.isPending ? "Menyimpan..." : "Simpan Info Pengambilan"}
                         </Button>

@@ -35,7 +35,7 @@ export function FilterBar() {
             </div>
 
             <div className="pl-3 pr-1">
-                <button className="flex h-12 items-center justify-center rounded-full bg-[#E31818] px-8 text-sm font-bold text-white transition-colors hover:bg-[#C91414]">
+                <button className="flex h-12 items-center justify-center rounded-full bg-[#3D3DE8] px-8 text-sm font-bold text-white transition-colors hover:bg-[#C91414]">
                     Temukan
                 </button>
             </div>

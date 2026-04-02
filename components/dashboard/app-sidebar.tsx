@@ -12,6 +12,7 @@ import {
     ChevronLeft,
     ClipboardList,
     FileText,
+    LogOut,
 } from "lucide-react";
 
 import {
@@ -31,6 +32,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 const mainMenuItems = [
     {
@@ -91,6 +94,13 @@ export function AppSidebar({ user }: AppSidebarProps) {
     const pathname = usePathname();
     const { state, toggleSidebar } = useSidebar();
     const isCollapsed = state === "collapsed";
+    const router = useRouter();
+
+    const handleLogout = () => {
+        Cookies.remove("auth_token");
+        Cookies.remove("user_role");
+        router.push("/login");
+    };
 
     const initials = user?.name
         ?.split(" ")
@@ -267,6 +277,15 @@ export function AppSidebar({ user }: AppSidebarProps) {
                         </div>
                     )}
                 </Link>
+                <Button
+                    variant="ghost"
+                    size={isCollapsed ? "icon" : "sm"}
+                    onClick={handleLogout}
+                    className="w-full justify-start gap-2 text-red-500 hover:text-red-600 hover:bg-red-50"
+                >
+                    <LogOut className="h-4 w-4" />
+                    {!isCollapsed && <span>Logout</span>}
+                </Button>
             </SidebarFooter>
 
             <SidebarRail />

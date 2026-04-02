@@ -231,13 +231,20 @@ export default function EditMobilPage() {
                             <div className="grid gap-2"><Label>Harga (Rp) *</Label><Input type="number" value={form.harga} onChange={set("harga")} /></div>
                             <div className="grid gap-2">
                                 <Label>Status</Label>
-                                <Select value={form.status} onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}>
+                                <Select
+                                    value={form.status}
+                                    onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}
+                                    disabled={item?.status === "TERJUAL"}
+                                >
                                     <SelectTrigger><SelectValue /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="TERSEDIA">Tersedia</SelectItem>
                                         <SelectItem value="TERJUAL">Terjual</SelectItem>
                                     </SelectContent>
                                 </Select>
+                                {item?.status === "TERJUAL" && (
+                                    <p className="text-xs text-muted-foreground">Mobil yang sudah terjual tidak dapat diubah menjadi tersedia</p>
+                                )}
                             </div>
                             <div className="sm:col-span-2 grid gap-2">
                                 <Label>Deskripsi</Label>

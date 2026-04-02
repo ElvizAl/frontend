@@ -49,6 +49,7 @@ export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export const loginResponseSchema = z.object({
   message: z.string(),
   accessToken: z.string(),
+  role: z.enum(["ADMIN", "SELLER", "BUYER"]),
 });
 
 export type LoginResponse = z.infer<typeof loginResponseSchema>;

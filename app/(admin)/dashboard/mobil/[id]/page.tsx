@@ -129,8 +129,8 @@ export default function AdminMobilDetailPage() {
     );
 
     const badge = STATUS_BADGE[item.status] || { label: item.status, className: "" };
-    const fotos: any[] = item.foto || item.fotos || [];
-    const penawaran: any[] = item.penawaran || [];
+    const fotos: any[] = item.fotomobils || [];
+    const penawaran = item.penawaran ?? null;
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -205,24 +205,37 @@ export default function AdminMobilDetailPage() {
                         </CardContent>
                     </Card>
 
-                    {/* Riwayat Penawaran */}
-                    {penawaran.length > 0 && (
+                    {/* Penawaran */}
+                    {penawaran && (
                         <Card>
                             <CardHeader className="flex-row items-center gap-2 pb-3">
                                 <Gavel className="h-4 w-4 text-muted-foreground" />
-                                <CardTitle className="text-base">Riwayat Penawaran</CardTitle>
+                                <CardTitle className="text-base">Penawaran Harga</CardTitle>
                             </CardHeader>
-                            <CardContent className="flex flex-col gap-3">
-                                {penawaran.map((p: any) => (
-                                    <div key={p.id} className="text-sm border rounded-md p-3 flex flex-col gap-1">
-                                        <div className="flex items-center justify-between">
-                                            <span className="font-medium">Rp {Number(p.hargaTawar).toLocaleString("id-ID")}</span>
-                                            <Badge variant="outline" className="text-xs">{p.status || "PENDING"}</Badge>
-                                        </div>
-                                        {p.catatanAdmin && <p className="text-muted-foreground">Catatan admin: {p.catatanAdmin}</p>}
-                                        {p.catatanSeller && <p className="text-muted-foreground">Catatan seller: {p.catatanSeller}</p>}
-                                    </div>
-                                ))}
+                            <CardContent className="flex flex-col gap-2 text-sm">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-semibold text-base">
+                                        Rp {Number(penawaran.hargaTawar).toLocaleString("id-ID")}
+                                    </span>
+                                    <Badge variant="outline" className={`text-xs ${
+                                        penawaran.respon === "DISETUJUI" ? "bg-green-100 text-green-700 border-green-300" :
+                                        penawaran.respon === "DITOLAK" ? "bg-red-100 text-red-700 border-red-300" :
+                                        "bg-yellow-100 text-yellow-700 border-yellow-300"
+                                    }`}>
+                                        {penawaran.respon === "MENUNGGU" ? "Menunggu Respon Seller" :
+                                         penawaran.respon === "DISETUJUI" ? "✓ Disetujui Seller" :
+                                         "✗ Ditolak Seller"}
+                                    </Badge>
+                                </div>
+                                {penawaran.catatanAdmin && (
+                                    <p className="text-muted-foreground">Catatan admin: {penawaran.catatanAdmin}</p>
+                                )}
+                                {penawaran.catatanSeller && (
+                                    <p className="text-muted-foreground">Balasan seller: {penawaran.catatanSeller}</p>
+                                )}
+                                {penawaran.metode && (
+                                    <p className="text-muted-foreground">Metode bayar seller: {penawaran.metode}</p>
+                                )}
                             </CardContent>
                         </Card>
                     )}

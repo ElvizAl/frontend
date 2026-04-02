@@ -96,9 +96,8 @@ export default function MobilSayaDetailPage() {
     );
 
     const badge = STATUS_BADGE[item.status] || { label: item.status, className: "", desc: "" };
-    const fotos: any[] = item.foto || item.fotos || [];
-    const penawaran: any[] = item.penawaran || [];
-    const latestPenawaran = penawaran[penawaran.length - 1];
+    const fotos: any[] = item.fotomobils || [];
+    const penawaran = item.penawaran ?? null; // object tunggal, bukan array
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-10">
@@ -131,7 +130,7 @@ export default function MobilSayaDetailPage() {
             )}
 
             {/* Penawaran Aktif — tombol respons */}
-            {item.status === "DITAWARKAN" && latestPenawaran && (
+            {item.status === "DITAWARKAN" && penawaran && (
                 <Card className="mb-6 border-purple-200 bg-purple-50/50">
                     <CardHeader className="flex-row items-center gap-2 pb-3">
                         <Gavel className="h-4 w-4 text-purple-600" />
@@ -140,11 +139,11 @@ export default function MobilSayaDetailPage() {
                     <CardContent className="flex flex-col gap-4">
                         <div>
                             <p className="text-2xl font-bold text-purple-700">
-                                Rp {Number(latestPenawaran.hargaTawar).toLocaleString("id-ID")}
+                                Rp {Number(penawaran.hargaTawar).toLocaleString("id-ID")}
                             </p>
-                            {latestPenawaran.catatanAdmin && (
+                            {penawaran.catatanAdmin && (
                                 <p className="text-sm text-muted-foreground mt-1">
-                                    Catatan admin: {latestPenawaran.catatanAdmin}
+                                    Catatan admin: {penawaran.catatanAdmin}
                                 </p>
                             )}
                         </div>
@@ -265,32 +264,30 @@ export default function MobilSayaDetailPage() {
                     </CardContent>
                 </Card>
 
-                {/* Riwayat Penawaran */}
-                {penawaran.length > 0 && (
+                {/* Detail Penawaran */}
+                {penawaran && (
                     <Card>
                         <CardHeader className="flex-row items-center gap-2 pb-3">
                             <Gavel className="h-4 w-4 text-muted-foreground" />
-                            <CardTitle className="text-base">Riwayat Penawaran</CardTitle>
+                            <CardTitle className="text-base">Detail Penawaran</CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-3">
-                            {penawaran.map((p: any, idx: number) => (
-                                <div key={p.id} className="text-sm border rounded-md p-3 flex flex-col gap-1">
-                                    <div className="flex items-center justify-between">
-                                        <span className="font-semibold">
-                                            Rp {Number(p.hargaTawar).toLocaleString("id-ID")}
-                                        </span>
-                                        <Badge variant="outline" className="text-xs">
-                                            {p.status || "PENDING"}
-                                        </Badge>
-                                    </div>
-                                    {p.catatanAdmin && (
-                                        <p className="text-muted-foreground">Admin: {p.catatanAdmin}</p>
-                                    )}
-                                    {p.catatanSeller && (
-                                        <p className="text-muted-foreground">Kamu: {p.catatanSeller}</p>
-                                    )}
+                            <div className="text-sm border rounded-md p-3 flex flex-col gap-1">
+                                <div className="flex items-center justify-between">
+                                    <span className="font-semibold">
+                                        Rp {Number(penawaran.hargaTawar).toLocaleString("id-ID")}
+                                    </span>
+                                    <Badge variant="outline" className="text-xs">
+                                        {penawaran.respon || "MENUNGGU"}
+                                    </Badge>
                                 </div>
-                            ))}
+                                {penawaran.catatanAdmin && (
+                                    <p className="text-muted-foreground">Admin: {penawaran.catatanAdmin}</p>
+                                )}
+                                {penawaran.catatanSeller && (
+                                    <p className="text-muted-foreground">Kamu: {penawaran.catatanSeller}</p>
+                                )}
+                            </div>
                         </CardContent>
                     </Card>
                 )}

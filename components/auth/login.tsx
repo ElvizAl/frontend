@@ -29,7 +29,14 @@ export default function Login() {
         onSuccess: (data: LoginResponse) => {
             toast.success(data.message || "Login berhasil!");
             Cookies.set("auth_token", data.accessToken, { expires: 7 });
-            router.push("/profile");
+
+            if (data.role === "ADMIN") {
+                router.push("/admin/dashboard");
+            } else if (data.role === "SELLER") {
+                router.push("/seller/dashboard");
+            } else {
+                router.push("/profile");
+            }
         },
         onError: (err: Error) => {
             toast.error(err.message || "Gagal melakukan login");

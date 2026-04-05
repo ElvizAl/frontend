@@ -288,6 +288,30 @@ export default function MobilSayaDetailPage() {
                                     <p className="text-muted-foreground">Kamu: {penawaran.catatanSeller}</p>
                                 )}
                             </div>
+                            
+                            {(penawaran.buktiTransferUrl || penawaran.kwitansiUrl) && (
+                                <div className="mt-2 flex flex-col gap-3">
+                                    <h4 className="font-semibold text-sm">Bukti Pembayaran Admin:</h4>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {penawaran.buktiTransferUrl && (
+                                            <div className="flex flex-col gap-1 border rounded p-2">
+                                                <p className="text-xs text-muted-foreground">Bukti Transfer</p>
+                                                <Link href={penawaran.buktiTransferUrl} target="_blank" className="relative aspect-video rounded overflow-hidden">
+                                                    <Image src={penawaran.buktiTransferUrl} alt="Bukti Transfer" fill className="object-cover" sizes="50vw" />
+                                                </Link>
+                                            </div>
+                                        )}
+                                        {penawaran.kwitansiUrl && (
+                                            <div className="flex flex-col gap-1 border rounded p-2">
+                                                <p className="text-xs text-muted-foreground">Kwitansi</p>
+                                                <Link href={penawaran.kwitansiUrl} target="_blank" className="relative aspect-video rounded overflow-hidden">
+                                                    <Image src={penawaran.kwitansiUrl} alt="Kwitansi" fill className="object-cover" sizes="50vw" />
+                                                </Link>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 )}

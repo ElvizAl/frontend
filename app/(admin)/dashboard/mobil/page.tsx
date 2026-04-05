@@ -37,6 +37,7 @@ const STATUS_OPTIONS: { value: string; label: string }[] = [
     { value: "DISETUJUI", label: "Disetujui" },
     { value: "DITOLAK", label: "Ditolak" },
     { value: "TERSEDIA", label: "Tersedia" },
+    { value: "TERJUAL", label: "Terjual" },
 ];
 
 const STATUS_BADGE: Record<string, { label: string; className: string }> = {
@@ -47,6 +48,7 @@ const STATUS_BADGE: Record<string, { label: string; className: string }> = {
     DISETUJUI: { label: "Disetujui", className: "bg-green-100 text-green-700 border-green-300" },
     DITOLAK: { label: "Ditolak", className: "bg-red-100 text-red-700 border-red-300" },
     TERSEDIA: { label: "Tersedia", className: "bg-emerald-100 text-emerald-700 border-emerald-300" },
+    TERJUAL: { label: "Terjual", className: "bg-zinc-800 text-zinc-100 border-zinc-900" },
 };
 
 export default function AdminMobilPage() {

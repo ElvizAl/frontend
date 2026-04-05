@@ -14,7 +14,8 @@ export type PenjualanStatus =
   | "DITAWARKAN"
   | "DISETUJUI"
   | "DITOLAK"
-  | "TERSEDIA";
+  | "TERSEDIA"
+  | "TERJUAL";
 
 // GET /penjualan — semua listing mobil seller
 export const getAllPenjualan = async (params?: {

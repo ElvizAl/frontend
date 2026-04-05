@@ -295,7 +295,8 @@ export default function AdminMobilDetailPage() {
                             </Dialog>
 
                             {/* Tawar Harga */}
-                            <Dialog open={tawarOpen} onOpenChange={setTawarOpen}>
+                            {!["DISETUJUI", "TERSEDIA", "TERJUAL", "DITOLAK"].includes(item.status) && (
+                                <Dialog open={tawarOpen} onOpenChange={setTawarOpen}>
                                 <DialogTrigger asChild>
                                     <Button className="w-full gap-2">
                                         <Gavel className="h-4 w-4" /> Beri Penawaran Harga
@@ -333,9 +334,11 @@ export default function AdminMobilDetailPage() {
                                     </DialogFooter>
                                 </DialogContent>
                             </Dialog>
+                            )}
 
                             {/* Konfirmasi Pembayaran */}
-                            <Dialog open={bayarOpen} onOpenChange={setBayarOpen}>
+                            {item.status === "DISETUJUI" && (
+                                <Dialog open={bayarOpen} onOpenChange={setBayarOpen}>
                                 <DialogTrigger asChild>
                                     <Button variant="secondary" className="w-full gap-2">
                                         <CreditCard className="h-4 w-4" /> Konfirmasi Pembayaran
@@ -383,6 +386,7 @@ export default function AdminMobilDetailPage() {
                                     </DialogFooter>
                                 </DialogContent>
                             </Dialog>
+                            )}
                         </CardContent>
                     </Card>
                 </div>

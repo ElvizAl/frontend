@@ -40,11 +40,18 @@ const TRANSMISI = ["Semua", "OTOMATIS", "MANUAL"];
 function BeliMobilContent() {
     const searchParams = useSearchParams();
     const initialQ = searchParams.get("q") ?? "";
+    const initialYearParam = searchParams.get("year");
+    const initialPriceParam = searchParams.get("price");
 
     const [q, setQ] = useState(initialQ);
     const [search, setSearch] = useState(initialQ);
-    const [yearRange, setYearRange] = useState<typeof YEAR_RANGES[0] | null>(null);
-    const [priceRange, setPriceRange] = useState<typeof PRICE_RANGES[0] | null>(null);
+    
+    // Find initial ranges from label if provided
+    const initialYear = YEAR_RANGES.find(r => r.label === initialYearParam) || null;
+    const initialPrice = PRICE_RANGES.find(r => r.label === initialPriceParam) || null;
+
+    const [yearRange, setYearRange] = useState<typeof YEAR_RANGES[0] | null>(initialYear);
+    const [priceRange, setPriceRange] = useState<typeof PRICE_RANGES[0] | null>(initialPrice);
     const [transmisi, setTransmisi] = useState("Semua");
     const [sort, setSort] = useState("Rekomendasi");
     const [showYearMenu, setShowYearMenu] = useState(false);

@@ -107,7 +107,7 @@ export default function JualMobilForm() {
     },
     onSuccess: () => {
       toast.success("Mobil berhasil diajukan! Menunggu evaluasi admin.");
-      router.push("/seller/daftar-mobil");
+      router.push("/seller/mobil-saya");
     },
     onError: (err: any) => toast.error(err.message || "Gagal mengajukan mobil"),
   });

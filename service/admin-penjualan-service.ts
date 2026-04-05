@@ -78,12 +78,17 @@ export const createPenawaranAdmin = async (
 // PATCH /penjualan/:id/bayar — konfirmasi pembayaran ke seller
 export const konfirmasiPembayaran = async (
   id: string,
-  data: { metode: "TUNAI" | "TRANSFER"; buktiTransferUrl?: string; kwitansiUrl?: string }
+  data: { metode: "TUNAI" | "TRANSFER"; buktiTransfer?: File; kwitansi?: File }
 ) => {
+  const formData = new FormData();
+  formData.append("metode", data.metode);
+  if (data.buktiTransfer) formData.append("buktiTransfer", data.buktiTransfer);
+  if (data.kwitansi) formData.append("kwitansi", data.kwitansi);
+
   const res = await fetch(`${BASE_URL}/penjualan/${id}/bayar`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
-    body: JSON.stringify(data),
+    headers: getAuthHeaders(), // Don't set Content-Type for FormData
+    body: formData,
   });
   const result = await res.json();
   if (!res.ok) throw new Error(result.message || "Gagal konfirmasi pembayaran");

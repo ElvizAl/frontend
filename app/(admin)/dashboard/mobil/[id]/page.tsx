@@ -65,8 +65,8 @@ export default function AdminMobilDetailPage() {
     // Bayar form state
     const [bayarOpen, setBayarOpen] = useState(false);
     const [metode, setMetode] = useState<"TUNAI" | "TRANSFER">("TUNAI");
-    const [buktiUrl, setBuktiUrl] = useState("");
-    const [kwitansiUrl, setKwitansiUrl] = useState("");
+    const [buktiFile, setBuktiFile] = useState<File | null>(null);
+    const [kwitansiFile, setKwitansiFile] = useState<File | null>(null);
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ["admin-penjualan-detail", id],
@@ -99,8 +99,8 @@ export default function AdminMobilDetailPage() {
     const bayarMutation = useMutation({
         mutationFn: () => konfirmasiPembayaran(id, {
             metode,
-            buktiTransferUrl: buktiUrl || undefined,
-            kwitansiUrl: kwitansiUrl || undefined,
+            buktiTransfer: buktiFile || undefined,
+            kwitansi: kwitansiFile || undefined,
         }),
         onSuccess: () => { toast.success("Pembayaran dikonfirmasi, mobil kini TERSEDIA"); invalidate(); setBayarOpen(false); },
         onError: (e: any) => toast.error(e.message),
@@ -356,20 +356,20 @@ export default function AdminMobilDetailPage() {
                                         </div>
                                         {metode === "TRANSFER" && (
                                             <div className="grid gap-2">
-                                                <Label>URL Bukti Transfer (opsional)</Label>
+                                                <Label>Foto Bukti Transfer (opsional)</Label>
                                                 <Input
-                                                    placeholder="https://..."
-                                                    value={buktiUrl}
-                                                    onChange={(e) => setBuktiUrl(e.target.value)}
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={(e) => setBuktiFile(e.target.files?.[0] || null)}
                                                 />
                                             </div>
                                         )}
                                         <div className="grid gap-2">
-                                            <Label>URL Kwitansi (opsional)</Label>
+                                            <Label>Foto Kwitansi (opsional)</Label>
                                             <Input
-                                                placeholder="https://..."
-                                                value={kwitansiUrl}
-                                                onChange={(e) => setKwitansiUrl(e.target.value)}
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => setKwitansiFile(e.target.files?.[0] || null)}
                                             />
                                         </div>
                                     </div>

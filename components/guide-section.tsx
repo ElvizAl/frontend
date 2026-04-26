@@ -8,28 +8,34 @@ const GUIDE_DATA = {
         {
             title: "Cari Mobil",
             description: "Lihat pilihan mobil melalui menu pencarian atau filter",
+            imgUrl: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80&w=800"
         },
         {
             title: "Pilih Mobil",
-            description: "Lihat pilihan mobil melalui menu pencarian atau filter",
+            description: "Pilih mobil idaman sesuai dengan kebutuhan Anda",
+            imgUrl: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&q=80&w=800"
         },
         {
             title: "Beli Mobil",
-            description: "Lihat pilihan mobil melalui menu pencarian atau filter",
+            description: "Lakukan pembayaran dengan aman dan mudah",
+            imgUrl: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=800"
         },
     ],
     jual: [
         {
             title: "Lengkapi Data",
-            description: "Lihat pilihan mobil melalui menu pencarian atau filter",
+            description: "Isi form detail dan unggah beberapa foto mobil Anda",
+            imgUrl: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=800"
         },
         {
             title: "Inspeksi Mobil",
-            description: "Lihat pilihan mobil melalui menu pencarian atau filter",
+            description: "Mobil akan diinspeksi oleh ahli secara komprehensif",
+            imgUrl: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&q=80&w=800"
         },
         {
             title: "Terima Pembayaran",
-            description: "Lihat pilihan mobil melalui menu pencarian atau filter",
+            description: "Dana akan segera ditransfer setelah semua disetujui",
+            imgUrl: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=800"
         },
     ]
 };
@@ -76,8 +82,14 @@ export function GuideSection() {
                         <div key={index} className="contents">
                             {/* Step Item */}
                             <div className="flex flex-col w-full">
-                                {/* Gray Image Placeholder */}
-                                <div className="w-full aspect-[4/3] bg-[#E5E5E5] rounded-xl mb-4 md:mb-6"></div>
+                                {/* Image */}
+                                <div className="w-full aspect-[4/3] bg-[#E5E5E5] rounded-xl mb-4 md:mb-6 overflow-hidden relative shadow-sm">
+                                    <img 
+                                        src={step.imgUrl} 
+                                        alt={step.title}
+                                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                                    />
+                                </div>
                                 
                                 {/* Content */}
                                 <div>

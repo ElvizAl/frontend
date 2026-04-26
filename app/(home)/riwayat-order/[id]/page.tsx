@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMyOrderById, uploadBuktiPembayaran, uploadKtp } from "@/service/order-service";
@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { ArrowLeft, Upload, FileText, CheckCircle, Clock, Car, Receipt } from "lucide-react";
+import { ArrowLeft, Upload, FileText, CheckCircle, Clock, Car, Receipt, Timer } from "lucide-react";
 import Link from "next/link";
 
 const STATUS_MAP: Record<string, { label: string; color: string; pct: number }> = {
@@ -46,6 +46,49 @@ export default function OrderDetailPage() {
   });
 
   const order = data?.data;
+
+  const [timeLeft, setTimeLeft] = useState<{ d: number; h: number; m: number; s: number } | null>(null);
+
+  useEffect(() => {
+    if (!order?.batasWaktuDp) return;
+    if (!["MENUNGGU_BUKTI_PESANAN", "MENUNGGU_DP"].includes(order.statusOrder)) return;
+
+    const target = new Date(order.batasWaktuDp).getTime();
+
+    // Initial calculation to avoid 1s delay
+    const now = new Date().getTime();
+    const distance = target - now;
+    if (distance > 0) {
+      setTimeLeft({
+        d: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        h: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        m: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        s: Math.floor((distance % (1000 * 60)) / 1000)
+      });
+    } else {
+      setTimeLeft({ d: 0, h: 0, m: 0, s: 0 });
+    }
+
+    const interval = setInterval(() => {
+      const newNow = new Date().getTime();
+      const newDistance = target - newNow;
+
+      if (newDistance < 0) {
+        clearInterval(interval);
+        setTimeLeft({ d: 0, h: 0, m: 0, s: 0 });
+        return;
+      }
+
+      setTimeLeft({
+        d: Math.floor(newDistance / (1000 * 60 * 60 * 24)),
+        h: Math.floor((newDistance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        m: Math.floor((newDistance % (1000 * 60 * 60)) / (1000 * 60)),
+        s: Math.floor((newDistance % (1000 * 60)) / 1000)
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [order?.batasWaktuDp, order?.statusOrder]);
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ["my-order", id] });
@@ -90,9 +133,36 @@ export default function OrderDetailPage() {
         )}
       </div>
 
+      {/* Countdown Timer */}
+      {timeLeft && (
+        <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="bg-red-100 p-2 rounded-lg shrink-0">
+            <Timer className="h-5 w-5 text-red-600 shrink-0" />
+          </div>
+          <div className="text-sm text-red-800 flex-1">
+            <p className="font-bold mb-1 text-base text-red-900">Segera Selesaikan Pembayaran</p>
+            <p className="mb-2 text-red-700">
+              Batas waktu pembayaran pesanan Anda akan berakhir dalam:
+            </p>
+            <div className="flex items-center gap-2 font-mono font-bold text-lg text-red-900 bg-red-100/50 p-2 rounded-md border border-red-200/50 w-fit">
+              <span>{timeLeft.d} hari</span>
+              <span>:</span>
+              <span>{timeLeft.h.toString().padStart(2, '0')} jam</span>
+              <span>:</span>
+              <span>{timeLeft.m.toString().padStart(2, '0')} menit</span>
+              <span>:</span>
+              <span>{timeLeft.s.toString().padStart(2, '0')} detik</span>
+            </div>
+            <p className="mt-2 text-xs text-red-600/80 font-medium">
+              *Pesanan akan otomatis dibatalkan jika melewati batas waktu ini.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex gap-4 items-start mb-6">
-      <div className="relative h-20 w-28 shrink-0 rounded-xl overflow-hidden bg-muted">
+        <div className="relative h-20 w-28 shrink-0 rounded-xl overflow-hidden bg-muted">
           <img
             src={foto ?? "https://images.unsplash.com/photo-1549317661-bc02c32e2a96?q=80&w=400&auto=format&fit=crop"}
             alt={order.mobil?.nama ?? "Mobil"}

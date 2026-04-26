@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getOrderById, verifikasiPembayaran, updateStatusSurat, updatePengambilan } from "@/service/order-service";
+import { getOrderById, verifikasiPembayaran, updateStatusSurat, updatePengambilan, prosesRefund } from "@/service/order-service";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { ArrowLeft, Upload, CheckCircle, FileText, Car, Package } from "lucide-react";
+import { ArrowLeft, Upload, CheckCircle, FileText, Car, Package, RefreshCcw } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -36,6 +36,7 @@ export default function AdminPesananDetailPage() {
     const [statusBpkb, setStatusBpkb] = useState("");
     const [metodePengambilan, setMetodePengambilan] = useState("");
     const [alamatKirim, setAlamatKirim] = useState("");
+    const [buktiRefundFile, setBuktiRefundFile] = useState<File | null>(null);
 
     const { data, isLoading } = useQuery({
         queryKey: ["admin-order", id],
@@ -68,6 +69,12 @@ export default function AdminPesananDetailPage() {
             suratFile ?? undefined
         ),
         onSuccess: () => { toast.success("Info pengambilan diperbarui"); invalidate(); setSuratFile(null); },
+        onError: (e: any) => toast.error(e.message),
+    });
+
+    const refundMutation = useMutation({
+        mutationFn: (pembayaranId: string) => prosesRefund(pembayaranId, buktiRefundFile ?? undefined),
+        onSuccess: () => { toast.success("Refund berhasil diproses"); invalidate(); setBuktiRefundFile(null); },
         onError: (e: any) => toast.error(e.message),
     });
 
@@ -167,6 +174,54 @@ export default function AdminPesananDetailPage() {
                                             {verifikasiMutation.isPending ? "Memverifikasi..." : "✓ Verifikasi Pembayaran"}
                                         </Button>
                                     </div>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Proses Refund (Jika Dibatalkan & Ada Bukti Pesanan) */}
+                {order.statusOrder === "DIBATALKAN" && order.pembayarans?.some((p: any) => p.tipe === "BUKTI_PESANAN") && (
+                    <Card className="border-red-200 bg-red-50/50">
+                        <CardHeader className="pb-3 flex-row items-center gap-2">
+                            <RefreshCcw className="h-4 w-4 text-red-600" />
+                            <CardTitle className="text-sm text-red-800">Refund Uang Muka (Bukti Pesanan)</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-4">
+                            {order.pembayarans.filter((p: any) => p.tipe === "BUKTI_PESANAN").map((p: any) => (
+                                <div key={p.id} className="flex flex-col gap-3 border border-red-100 rounded-lg p-3 bg-white">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-medium text-sm">Uang Muka BUKTI PESANAN</p>
+                                            <p className="text-xs text-muted-foreground">{p.metode} · Rp {Number(p.nominal).toLocaleString("id-ID")}</p>
+                                        </div>
+                                        <Badge variant="outline" className={p.isRefunded ? "bg-green-100 text-green-700 border-green-300" : "bg-red-100 text-red-700 border-red-300"}>
+                                            {p.isRefunded ? "Sudah Di-refund" : "Belum Refund"}
+                                        </Badge>
+                                    </div>
+                                    
+                                    {!p.isRefunded ? (
+                                        <div className="flex items-center gap-3 mt-2">
+                                            <label className="flex items-center gap-2 text-sm cursor-pointer text-primary hover:underline">
+                                                <Upload className="h-3.5 w-3.5" /> {buktiRefundFile ? buktiRefundFile.name : "Upload Bukti Refund"}
+                                                <input type="file" accept="image/*,.pdf" className="hidden"
+                                                    onChange={(e) => setBuktiRefundFile(e.target.files?.[0] ?? null)} />
+                                            </label>
+                                            <Button size="sm" variant="destructive" onClick={() => refundMutation.mutate(p.id)} disabled={refundMutation.isPending}>
+                                                {refundMutation.isPending ? "Memproses..." : "Proses Refund"}
+                                            </Button>
+                                        </div>
+                                    ) : (
+                                        <div className="mt-2 text-xs bg-green-50 p-2 rounded-md border border-green-100">
+                                            <p className="font-medium text-green-800">Refund telah dikembalikan</p>
+                                            <p className="text-green-700/80 mb-1">Pada {new Date(p.refundedAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+                                            {p.buktiRefundUrl && (
+                                                <a href={p.buktiRefundUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline flex items-center gap-1 mt-1">
+                                                    <CheckCircle className="h-3 w-3" /> Lihat Bukti Refund
+                                                </a>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </CardContent>

@@ -118,6 +118,20 @@ export const verifikasiPembayaran = async (
     return result;
 };
 
+export const prosesRefund = async (pembayaranId: string, buktiFile?: File) => {
+    const formData = new FormData();
+    if (buktiFile) formData.append("bukti", buktiFile);
+
+    const res = await fetch(`${BASE_URL}/order/pembayaran/${pembayaranId}/refund`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: formData,
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Gagal proses refund");
+    return result;
+};
+
 export const updateStatusSurat = async (
     orderId: string,
     data: { statusStnk?: string; statusBpkb?: string }

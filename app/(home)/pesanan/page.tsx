@@ -1,13 +1,14 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { getMyOrders } from "@/service/order-service";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getMyOrders, cancelOrder } from "@/service/order-service";
 import { Button } from "@/components/ui/button";
 import {
     Clock, CheckCircle, ChevronRight, ShoppingBag,
-    Upload, CreditCard, Package, AlertCircle,
+    Upload, CreditCard, Package, AlertCircle, XCircle,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 // Status yang dianggap "berlangsung"
 const ACTIVE_STATUSES = [
@@ -61,11 +62,24 @@ const STATUS_INFO: Record<string, {
 
 const STEPS = ["Bukti Pesanan", "DP 30%", "Pelunasan", "Serah Terima"];
 
+const CANCELLABLE_STATUSES = ["MENUNGGU_BUKTI_PESANAN", "MENUNGGU_DP", "MENUNGGU_PELUNASAN"];
+
 export default function PesananPage() {
+    const queryClient = useQueryClient();
     const { data, isLoading, isError } = useQuery({
         queryKey: ["my-orders-active"],
         queryFn: () => getMyOrders({ limit: 50 }),
         refetchInterval: 30_000,
+    });
+
+    const cancelMutation = useMutation({
+        mutationFn: (orderId: string) => cancelOrder(orderId),
+        onSuccess: () => {
+            toast.success("Pesanan berhasil dibatalkan.");
+            queryClient.invalidateQueries({ queryKey: ["my-orders-active"] });
+            queryClient.invalidateQueries({ queryKey: ["my-orders"] });
+        },
+        onError: (e: any) => toast.error(e.message),
     });
 
     const allOrders: any[] = data?.data || [];
@@ -202,9 +216,24 @@ export default function PesananPage() {
 
                                     {/* Footer */}
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-1 text-[11px] text-gray-400">
-                                            <Clock className="h-3 w-3" />
-                                            {new Date(order.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-1 text-[11px] text-gray-400">
+                                                <Clock className="h-3 w-3" />
+                                                {new Date(order.createdAt).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                                            </div>
+                                            {CANCELLABLE_STATUSES.includes(order.statusOrder) && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    asChild
+                                                    className="text-[11px] h-6 px-2 text-red-500 hover:text-red-700 hover:bg-red-50 gap-1"
+                                                >
+                                                    <Link href={`/riwayat-order/${order.id}`}>
+                                                        <XCircle className="h-3 w-3" />
+                                                        Batalkan
+                                                    </Link>
+                                                </Button>
+                                            )}
                                         </div>
                                         <Button asChild size="sm"
                                             className="bg-[#3D3DE8] hover:bg-[#3D3DE8]/90 text-xs h-8 gap-1.5">

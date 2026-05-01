@@ -12,6 +12,7 @@ import {
     ChevronLeft,
     ClipboardList,
     FileText,
+    Landmark,
     LogOut,
 } from "lucide-react";
 
@@ -58,6 +59,11 @@ const transactionItems = [
         title: "Pesanan / Order",
         url: "/dashboard/pesanan",
         icon: ShoppingCart,
+    },
+    {
+        title: "Rekening Bank",
+        url: "/dashboard/rekening",
+        icon: Landmark,
     },
 ];
 

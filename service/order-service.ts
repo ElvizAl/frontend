@@ -77,6 +77,50 @@ export const uploadBuktiPembayaran = async (
     return result;
 };
 
+export const cancelOrder = async (
+    orderId: string,
+    refundInfo?: { noRekening: string; namaRekening: string; bank: string },
+) => {
+    const res = await fetch(`${BASE_URL}/order/my/${orderId}/cancel`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        body: JSON.stringify(refundInfo || {}),
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Gagal membatalkan pesanan");
+    return result;
+};
+
+// ─── REKENING ADMIN ──────────────────────────────────────────────────
+
+export const getRekeningAdmin = async () => {
+    const res = await fetch(`${BASE_URL}/order/rekening`, { headers: getAuthHeaders() });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Gagal mengambil rekening admin");
+    return result;
+};
+
+export const addRekeningAdmin = async (data: { bank: string; noRekening: string; atasNama: string }) => {
+    const res = await fetch(`${BASE_URL}/order/rekening`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        body: JSON.stringify(data),
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Gagal menambah rekening admin");
+    return result;
+};
+
+export const deleteRekeningAdmin = async (id: string) => {
+    const res = await fetch(`${BASE_URL}/order/rekening/${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Gagal menghapus rekening admin");
+    return result;
+};
+
 // ─── ADMIN ─────────────────────────────────────────────────────────
 
 export const getAllOrders = async (params?: { status?: string; page?: number; limit?: number }) => {

@@ -188,6 +188,28 @@ export default function AdminPesananDetailPage() {
                             <CardTitle className="text-sm text-red-800">Refund Uang Muka (Bukti Pesanan)</CardTitle>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-4">
+                            {/* Menampilkan Informasi Rekening Refund Pembeli */}
+                            {order.noRekeningRefund && (
+                                <div className="bg-white border border-red-200 rounded-lg p-3">
+                                    <p className="text-sm font-semibold text-red-800 mb-2">Rekening Tujuan Refund</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
+                                        <div>
+                                            <span className="text-xs text-muted-foreground block">Bank</span>
+                                            <span className="font-bold text-red-900">{order.bankRefund}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs text-muted-foreground block">Nomor Rekening</span>
+                                            <span className="font-mono font-semibold text-red-900">{order.noRekeningRefund}</span>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs text-muted-foreground block">Atas Nama</span>
+                                            <span className="font-medium text-red-900">{order.namaRekeningRefund}</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-red-600 mt-2">*Silakan transfer dana refund ke rekening ini.</p>
+                                </div>
+                            )}
+
                             {order.pembayarans.filter((p: any) => p.tipe === "BUKTI_PESANAN").map((p: any) => (
                                 <div key={p.id} className="flex flex-col gap-3 border border-red-100 rounded-lg p-3 bg-white">
                                     <div className="flex items-center justify-between">

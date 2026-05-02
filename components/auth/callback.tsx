@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
 import { Loader2 } from "lucide-react";
+import { getRoleFromToken } from "@/lib/decode-jwt";
+import { getProfile } from "@/service/profile-service";
 
 export default function OAuthCallback() {
     const router = useRouter();
@@ -15,8 +17,26 @@ export default function OAuthCallback() {
 
         if (token) {
             Cookies.set("auth_token", token, { expires: 7 });
-            toast.success("Login berhasil!");
-            router.replace("/profile");
+
+            const role = getRoleFromToken(token);
+            if (role) Cookies.set("user_role", role, { expires: 7 });
+
+            if (role === "ADMIN") {
+                toast.success("Login berhasil!");
+                router.replace("/dashboard");
+                return;
+            }
+
+            // Cek apakah BUYER/SELLER sudah punya profile
+            getProfile()
+                .then(() => {
+                    toast.success("Login berhasil!");
+                    router.replace("/");
+                })
+                .catch(() => {
+                    toast.success("Login berhasil! Lengkapi profil Anda.");
+                    router.replace("/profile");
+                });
         } else {
             toast.error("Login dengan Google gagal. Silakan coba lagi.");
             router.replace("/login");

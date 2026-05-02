@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { loginSchema, LoginInput, LoginResponse } from "@/validasi/auth-validasi";
 import { loginUser } from "@/service/auth-service";
+import { getProfile } from "@/service/profile-service";
 import Cookies from "js-cookie";
 import { getRoleFromToken } from "@/lib/decode-jwt";
 
@@ -27,7 +28,7 @@ export default function Login() {
 
     const { mutate, isPending } = useMutation({
         mutationFn: loginUser,
-        onSuccess: (data: LoginResponse) => {
+        onSuccess: async (data: LoginResponse) => {
             toast.success(data.message || "Login berhasil!");
             Cookies.set("auth_token", data.accessToken, { expires: 7 });
 
@@ -37,9 +38,16 @@ export default function Login() {
 
             if (role === "ADMIN") {
                 router.push("/dashboard");
-            } else if (role === "SELLER") {
-                router.push("/profile");
-            } else {
+                return;
+            }
+
+            // Cek apakah user sudah punya profile
+            try {
+                await getProfile();
+                // Sudah punya profile → langsung ke home
+                router.push("/");
+            } catch {
+                // Belum punya profile → isi profil dulu
                 router.push("/profile");
             }
         },

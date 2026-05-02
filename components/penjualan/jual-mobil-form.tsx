@@ -85,13 +85,58 @@ export default function JualMobilForm() {
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: ({ data, files }: { data: JualMobilInput; files: File[] }) => {
+    mutationFn: async ({ data, files }: { data: JualMobilInput; files: File[] }) => {
       // put primary first
       const ordered = [...files];
       if (primaryIdx > 0 && ordered.length > 1) {
         const [p] = ordered.splice(primaryIdx, 1);
         ordered.unshift(p);
       }
+
+      // Kompresi foto agar tidak terkena limit payload Vercel (4.5MB limit = failed to fetch)
+      const compressedFiles = await Promise.all(
+        ordered.map(async (f) => {
+          return new Promise<File>((resolve) => {
+             const img = new Image();
+             const tempUrl = URL.createObjectURL(f);
+             img.onload = () => {
+               URL.revokeObjectURL(tempUrl);
+               const canvas = document.createElement("canvas");
+               let { width, height } = img;
+               
+               // Max dimensi 1200x1200px
+               if (width > 1200 || height > 1200) {
+                 if (width > height) {
+                   height = Math.round((height * 1200) / width);
+                   width = 1200;
+                 } else {
+                   width = Math.round((width * 1200) / height);
+                   height = 1200;
+                 }
+               }
+               canvas.width = width;
+               canvas.height = height;
+               const ctx = canvas.getContext("2d");
+               ctx?.drawImage(img, 0, 0, width, height);
+
+               canvas.toBlob(
+                 (blob) => {
+                   if (blob) resolve(new File([blob], f.name.replace(/\.[^/.]+$/, ".jpg"), { type: "image/jpeg", lastModified: Date.now() }));
+                   else resolve(f);
+                 },
+                 "image/jpeg",
+                 0.7 // kualitas 70%
+               );
+             };
+             img.onerror = () => {
+               URL.revokeObjectURL(tempUrl);
+               resolve(f); // Fallback ke file asli
+             };
+             img.src = tempUrl;
+          });
+        })
+      );
+
       const stringData: Record<string, string | undefined> = {
         nama: data.nama,
         merek: data.merek,
@@ -103,7 +148,8 @@ export default function JualMobilForm() {
         transmisi: data.transmisi,
         deskripsi: data.deskripsi,
       };
-      return createMobilSeller(stringData, ordered);
+      
+      return createMobilSeller(stringData, compressedFiles);
     },
     onSuccess: () => {
       toast.success("Mobil berhasil diajukan! Menunggu evaluasi admin.");

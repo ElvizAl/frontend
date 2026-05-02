@@ -24,8 +24,14 @@ export const createMobilSeller = async (
     body: formData,
   });
 
-  const result = await res.json();
-  if (!res.ok) throw new Error(result.message || "Gagal membuat listing mobil");
+  let result;
+  try {
+    result = await res.json();
+  } catch {
+    result = { message: "Internal Server Error" };
+  }
+
+  if (!res.ok) throw new Error(result.message || "Gagal membuat listing stabil (Mungkin ukuran foto kebesaran atau server bermasalah)");
   return result;
 };
 

@@ -34,7 +34,14 @@ async function getMyMobilById(id: string) {
     return result;
 }
 
-async function responPenawaran(id: string, data: { respon: "DISETUJUI" | "DITOLAK"; catatanSeller?: string; metode?: "TUNAI" | "TRANSFER" }) {
+async function responPenawaran(id: string, data: { 
+    respon: "DISETUJUI" | "DITOLAK"; 
+    catatanSeller?: string; 
+    metode?: "TUNAI" | "TRANSFER";
+    noRekeningSeller?: string;
+    namaRekeningSeller?: string;
+    bankSeller?: string;
+}) {
     const res = await fetch(`${BASE_URL}/penjualan/${id}/respon`, {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getAuthHeaders() },
@@ -62,6 +69,9 @@ export default function MobilSayaDetailPage() {
     const [respon, setRespon] = useState<"DISETUJUI" | "DITOLAK">("DISETUJUI");
     const [catatanSeller, setCatatanSeller] = useState("");
     const [metode, setMetode] = useState<"TUNAI" | "TRANSFER">("TUNAI");
+    const [noRekeningSeller, setNoRekeningSeller] = useState("");
+    const [namaRekeningSeller, setNamaRekeningSeller] = useState("");
+    const [bankSeller, setBankSeller] = useState("");
     const [showResponForm, setShowResponForm] = useState(false);
 
     const { data, isLoading, isError } = useQuery({
@@ -77,6 +87,9 @@ export default function MobilSayaDetailPage() {
             respon,
             catatanSeller: catatanSeller || undefined,
             metode: respon === "DISETUJUI" ? metode : undefined,
+            noRekeningSeller: respon === "DISETUJUI" && metode === "TRANSFER" ? noRekeningSeller : undefined,
+            namaRekeningSeller: respon === "DISETUJUI" && metode === "TRANSFER" ? namaRekeningSeller : undefined,
+            bankSeller: respon === "DISETUJUI" && metode === "TRANSFER" ? bankSeller : undefined,
         }),
         onSuccess: () => {
             toast.success(respon === "DISETUJUI" ? "Penawaran disetujui!" : "Penawaran ditolak.");
@@ -169,16 +182,55 @@ export default function MobilSayaDetailPage() {
 
                                 {respon === "DISETUJUI" && (
                                     <div className="grid gap-2">
-                                        <Label>Metode Pembayaran</Label>
+                                        <Label>Metode Pencairan</Label>
                                         <Select value={metode} onValueChange={(v) => setMetode(v as any)}>
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
+                                            <SelectTrigger><SelectValue /></SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="TUNAI">Tunai</SelectItem>
                                                 <SelectItem value="TRANSFER">Transfer Bank</SelectItem>
                                             </SelectContent>
                                         </Select>
+
+                                        {metode === "TRANSFER" && (
+                                            <div className="bg-blue-50/50 border border-blue-100 p-4 rounded-md mt-2 flex flex-col gap-3">
+                                                <p className="text-sm font-medium text-blue-900 mb-1">Informasi Rekening Pencairan</p>
+                                                <div className="grid gap-1.5">
+                                                    <Label className="text-xs">Bank</Label>
+                                                    <Select value={bankSeller} onValueChange={setBankSeller}>
+                                                      <SelectTrigger className="h-9"><SelectValue placeholder="Pilih Bank" /></SelectTrigger>
+                                                      <SelectContent>
+                                                        <SelectItem value="BCA">BCA</SelectItem>
+                                                        <SelectItem value="BNI">BNI</SelectItem>
+                                                        <SelectItem value="BRI">BRI</SelectItem>
+                                                        <SelectItem value="Mandiri">Mandiri</SelectItem>
+                                                        <SelectItem value="BSI">BSI</SelectItem>
+                                                        <SelectItem value="CIMB">CIMB Niaga</SelectItem>
+                                                        <SelectItem value="Lainnya">Lainnya</SelectItem>
+                                                      </SelectContent>
+                                                    </Select>
+                                                </div>
+                                                <div className="grid gap-1.5">
+                                                    <Label className="text-xs">Nomor Rekening</Label>
+                                                    <input
+                                                        type="text"
+                                                        value={noRekeningSeller}
+                                                        onChange={(e) => setNoRekeningSeller(e.target.value)}
+                                                        placeholder="Contoh: 1234567890"
+                                                        className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                                    />
+                                                </div>
+                                                <div className="grid gap-1.5">
+                                                    <Label className="text-xs">Nama Atas Rekening</Label>
+                                                    <input
+                                                        type="text"
+                                                        value={namaRekeningSeller}
+                                                        onChange={(e) => setNamaRekeningSeller(e.target.value)}
+                                                        placeholder="Sesuai buku tabungan"
+                                                        className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -196,7 +248,7 @@ export default function MobilSayaDetailPage() {
                                     <Button variant="outline" onClick={() => setShowResponForm(false)}>Batal</Button>
                                     <Button
                                         onClick={() => responMutation.mutate()}
-                                        disabled={responMutation.isPending}
+                                        disabled={responMutation.isPending || (respon === "DISETUJUI" && metode === "TRANSFER" && (!bankSeller || !noRekeningSeller || !namaRekeningSeller))}
                                         className={respon === "DITOLAK" ? "bg-red-600 hover:bg-red-700" : ""}
                                     >
                                         {responMutation.isPending ? "Mengirim..." : respon === "DISETUJUI" ? "Setuju & Kirim" : "Tolak Penawaran"}

@@ -238,6 +238,18 @@ export default function AdminMobilDetailPage() {
                                 {penawaran.metode && (
                                     <p className="text-muted-foreground">Metode bayar seller: {penawaran.metode}</p>
                                 )}
+                                {penawaran.metode === "TRANSFER" && penawaran.bankSeller && (
+                                    <div className="mt-2 text-xs bg-blue-50 border border-blue-100 rounded-md p-3">
+                                        <p className="font-semibold text-blue-900 mb-1.5 flex items-center gap-1.5">
+                                            <CreditCard className="h-3.5 w-3.5" /> Rekening Pencairan Seller
+                                        </p>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <div><span className="text-blue-700/80 block">Bank</span><span className="font-bold text-blue-900">{penawaran.bankSeller}</span></div>
+                                            <div><span className="text-blue-700/80 block">No. Rekening</span><span className="font-mono font-medium text-blue-900">{penawaran.noRekeningSeller}</span></div>
+                                            <div><span className="text-blue-700/80 block">Atas Nama</span><span className="font-medium text-blue-900">{penawaran.namaRekeningSeller}</span></div>
+                                        </div>
+                                    </div>
+                                )}
                             </CardContent>
                         </Card>
                     )}

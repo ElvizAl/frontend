@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getOrderById, verifikasiPembayaran, updateStatusSurat, updatePengambilan, prosesRefund } from "@/service/order-service";
+import { getOrderById, verifikasiPembayaran, updateStatusSurat, updatePengambilan, prosesRefund, tandaiSelesai } from "@/service/order-service";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -75,6 +75,12 @@ export default function AdminPesananDetailPage() {
     const refundMutation = useMutation({
         mutationFn: (pembayaranId: string) => prosesRefund(pembayaranId, buktiRefundFile ?? undefined),
         onSuccess: () => { toast.success("Refund berhasil diproses"); invalidate(); setBuktiRefundFile(null); },
+        onError: (e: any) => toast.error(e.message),
+    });
+
+    const selesaiMutation = useMutation({
+        mutationFn: () => tandaiSelesai(id),
+        onSuccess: () => { toast.success("Serah terima berhasil! Pesanan Selesai."); invalidate(); },
         onError: (e: any) => toast.error(e.message),
     });
 
@@ -354,6 +360,33 @@ export default function AdminPesananDetailPage() {
                         </Button>
                     </CardContent>
                 </Card>
+
+                {/* Serah Terima Kendaraan */}
+                {order.statusOrder === "LUNAS_SIAP_SERAH" && (
+                    <Card className="border-green-300 bg-green-50 shadow-sm">
+                        <CardHeader className="pb-3 flex-row items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-green-600" />
+                            <CardTitle className="text-sm text-green-800">Serah Terima Kendaraan</CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-4">
+                            <p className="text-sm text-green-700">
+                                Pesanan sudah lunas. Jika kendaraan sudah diserahkan kepada pembeli, klik tombol di bawah untuk menandai pesanan ini benar-benar selesai.
+                            </p>
+                            {order.statusStnk !== "SELESAI" && (
+                                <p className="text-xs text-red-600 inline-flex items-center gap-1 bg-red-50 p-2 rounded-md font-medium">
+                                    Peringatan: STNK belum selesai diproses. Anda belum bisa melakukan serah terima kendaraan.
+                                </p>
+                            )}
+                            <Button 
+                                onClick={() => selesaiMutation.mutate()} 
+                                disabled={selesaiMutation.isPending || order.statusStnk !== "SELESAI"} 
+                                className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white"
+                            >
+                                {selesaiMutation.isPending ? "Memproses..." : "Tandai Serah Terima Berhasil"}
+                            </Button>
+                        </CardContent>
+                    </Card>
+                )}
             </main>
         </div>
     );

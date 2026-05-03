@@ -227,3 +227,12 @@ export const getLaporan = async (params: { bulan: number; tahun: number }) => {
     return result;
 };
 
+export const tandaiSelesai = async (orderId: string) => {
+    const res = await fetch(`${BASE_URL}/order/${orderId}/selesai`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message || "Gagal menandai selesai");
+    return result;
+};

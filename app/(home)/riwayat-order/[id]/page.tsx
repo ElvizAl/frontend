@@ -237,14 +237,21 @@ export default function OrderDetailPage() {
           <CardHeader className="pb-3"><CardTitle className="text-sm">Status Dokumen</CardTitle></CardHeader>
           <CardContent className="flex flex-col gap-3 text-sm">
             {[
-              { label: "STNK", val: order.statusStnk },
-              { label: "BPKB", val: order.statusBpkb },
-            ].map(({ label, val }) => (
-              <div key={label} className="flex justify-between items-center">
-                <span className="text-muted-foreground">{label}</span>
-                <Badge variant="outline" className={`text-xs ${val === "SELESAI" ? "bg-green-100 text-green-700 border-green-300" : val === "SEDANG_DIPROSES" ? "bg-blue-100 text-blue-700 border-blue-300" : "bg-zinc-100 text-zinc-500 border-zinc-300"}`}>
-                  {val?.replace(/_/g, " ")}
-                </Badge>
+              { label: "STNK", val: order.statusStnk, estimasi: order.estimasiStnkSelesai },
+              { label: "BPKB", val: order.statusBpkb, estimasi: order.estimasiBpkbSelesai },
+            ].map(({ label, val, estimasi }) => (
+              <div key={label} className="flex flex-col gap-1.5">
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground text-sm">{label}</span>
+                  <Badge variant="outline" className={`text-xs ${val === "SELESAI" ? "bg-green-100 text-green-700 border-green-300" : val === "SEDANG_DIPROSES" ? "bg-blue-100 text-blue-700 border-blue-300" : "bg-zinc-100 text-zinc-500 border-zinc-300"}`}>
+                    {val?.replace(/_/g, " ")}
+                  </Badge>
+                 </div>
+                 {val === "SEDANG_DIPROSES" && estimasi && (
+                   <div className="text-[11px] text-right text-blue-600/80 italic w-full">
+                     Estimasi Selesai: {new Date(estimasi).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' })}
+                   </div>
+                 )}
               </div>
             ))}
             {order.metodePengambilan && (
